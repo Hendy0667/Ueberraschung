@@ -28,6 +28,13 @@
             color: #555;
         }
 
+        #loveLetter {
+            margin-top: 30px;
+            font-size: 1.1em;
+            color: #444;
+            white-space: pre-line;
+        }
+
         #password-section {
             margin-top: 100px;
         }
@@ -76,6 +83,7 @@
         <p>Seit dem 25. Mai 2025 um 13:42 Uhr</p>
         <div id="timer">Lädt...</div>
         <div id="extraText" style="display: none;"></div>
+        <div id="loveLetter" style="display: none;"></div>
 
         <div id="music-buttons">
             <button onclick="changeSong('experience.mp3')">🎻 Experience</button>
@@ -90,8 +98,8 @@
 
     <script>
         const startDate = new Date("2025-05-25T13:42:00");
-        const showFrom = new Date("2025-07-25T13:42:00"); // 2 Monate
-        const showUntil = new Date("2025-08-25T13:42:00"); // 3 Monate
+        const showFrom = new Date("2025-06-25T13:42:00");
+        const showUntil = new Date("2025-08-25T13:42:00");
 
         function updateTimer() {
             const now = new Date();
@@ -106,6 +114,8 @@
             const days = Math.floor(diff / (1000 * 60 * 60 * 24));
             diff -= days * 1000 * 60 * 60 * 24;
 
+            const weeks = Math.floor(days / 7);
+
             const hours = Math.floor(diff / (1000 * 60 * 60));
             diff -= hours * 1000 * 60 * 60;
 
@@ -115,7 +125,7 @@
             const seconds = Math.floor(diff / 1000);
 
             document.getElementById("timer").textContent =
-                `${years} Jahr(e), ${months} Monat(e), ${days} Tag(e), ` +
+                `${years} Jahr(e), ${months} Monat(e), ${weeks} Woche(n), ${days} Tag(e), ` +
                 `${hours} Stunde(n), ${minutes} Minute(n), ${seconds} Sekunde(n)`;
 
             const totalMs = now - startDate;
@@ -132,8 +142,25 @@
                     `Das sind: ${totalMonths} Monat(e) oder ${totalWeeks} Woche(n) ` +
                     `oder ${totalDays} Tag(e) oder ${totalHours} Stunde(n) ` +
                     `oder ${totalMinutes} Minute(n) oder ${totalSeconds} Sekunde(n)`;
+
+                document.getElementById("loveLetter").style.display = "block";
+                document.getElementById("loveLetter").innerText =
+`Zwei Monate, Mia...
+
+Ich weiß nicht wie – aber jedes Mal, wenn du mir schreibst, schlägt mein Herz schneller.
+Du bringst Ruhe in meine Tage, Wärme in meine Gedanken, und Liebe in mein Herz.
+
+Diese zwei Monate mit dir waren mehr als nur Zeit... sie waren Gefühl, Hoffnung, Nähe – selbst auf Entfernung.
+Ich liebe dich für all das, was du bist. Für alles, was du mir zeigst. Und für das, was wir gemeinsam sein können.
+
+Ich bin so dankbar, dass du mich gewählt hast.
+
+Ich bleibe – solange du mich willst.
+
+Dein Hendrik. 💖`;
             } else {
                 document.getElementById("extraText").style.display = "none";
+                document.getElementById("loveLetter").style.display = "none";
             }
         }
 
