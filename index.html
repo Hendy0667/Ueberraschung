@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Unsere Zeit zusammen</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- WICHTIG für Mobilgeräte -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <style>
         body {
@@ -107,7 +107,7 @@
             <button onclick="changeSong('a_million_dreams.mp3')">🌟 A Million Dreams</button>
         </div>
 
-        <audio id="loveMusic" autoplay>
+        <audio id="loveMusic" autoplay hidden>
             <source src="experience.mp3" type="audio/mpeg">
             Dein Browser unterstützt kein Audio.
         </audio>
@@ -115,48 +115,54 @@
 
     <script>
         const startDate = new Date("2025-05-25T13:42:00");
-        const showFrom = new Date("2025-07-25T00:00:00");
+        const showFrom = new Date("2025-07-24T00:00:00");
         const showUntil = new Date("2025-08-25T00:00:00");
 
         function updateTimer() {
             const now = new Date();
-            let diff = now - startDate;
+            let diffMs = now - startDate;
 
-            const years = Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
-            diff -= years * 1000 * 60 * 60 * 24 * 365.25;
+            // Gesamtdauer in Sekunden
+            let totalSeconds = Math.floor(diffMs / 1000);
 
-            const months = Math.floor(diff / (1000 * 60 * 60 * 24 * 30.44));
-            diff -= months * 1000 * 60 * 60 * 24 * 30.44;
+            // Berechne alle Einheiten
+            let seconds = totalSeconds % 60;
+            let totalMinutes = Math.floor(totalSeconds / 60);
+            let minutes = totalMinutes % 60;
+            let totalHours = Math.floor(totalMinutes / 60);
+            let hours = totalHours % 24;
+            let totalDays = Math.floor(totalHours / 24);
 
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            diff -= days * 1000 * 60 * 60 * 24;
+            // Monate und Tage berechnen:
+            // Monate = volle Monate zwischen Startdatum und jetzt, maximal 12
+            let months = now.getMonth() - startDate.getMonth() + 
+                         (now.getFullYear() - startDate.getFullYear()) * 12;
+            if (months > 12) months = 12;
 
-            const weeks = Math.floor(days / 7);
+            // Tage, die nach vollen Monaten übrig bleiben
+            // Wir ziehen Monate in Tagen ab (Ø 30.44 Tage pro Monat)
+            let daysAfterMonths = totalDays - Math.floor(months * 30.44);
+            if (daysAfterMonths < 0) daysAfterMonths = 0;
 
-            const hours = Math.floor(diff / (1000 * 60 * 60));
-            diff -= hours * 1000 * 60 * 60;
-
-            const minutes = Math.floor(diff / (1000 * 60));
-            diff -= minutes * 1000 * 60;
-
-            const seconds = Math.floor(diff / 1000);
+            // Wochen (maximal 3) und Tage (maximal 6)
+            let weeks = Math.floor(daysAfterMonths / 7);
+            if (weeks > 3) {
+                weeks = 3;
+                daysAfterMonths = 6;
+            } else {
+                daysAfterMonths = daysAfterMonths % 7;
+            }
+            let days = daysAfterMonths;
 
             document.getElementById("timer").textContent =
-                `${years} Jahr(e), ${months} Monat(e), ${weeks} Woche(n), ${days} Tag(e), ` +
+                `${months} Monat(e), ${weeks} Woche(n), ${days} Tag(e), ` +
                 `${hours} Stunde(n), ${minutes} Minute(n), ${seconds} Sekunde(n)`;
 
-            const totalMs = now - startDate;
-            const totalSeconds = Math.floor(totalMs / 1000);
-            const totalMinutes = Math.floor(totalSeconds / 60);
-            const totalHours = Math.floor(totalMinutes / 60);
-            const totalDays = Math.floor(totalHours / 24);
-            const totalWeeks = Math.floor(totalDays / 7);
-            const totalMonths = Math.floor(totalWeeks / 4.345);
-
+            // Extra Text nur im Zeitraum anzeigen
             if (now >= showFrom && now < showUntil) {
                 document.getElementById("extraText").style.display = "block";
                 document.getElementById("extraText").innerHTML =
-                    `Das sind: ${totalMonths} Monat(e) oder ${totalWeeks} Woche(n) ` +
+                    `Das sind: ${months} Monat(e) oder ${weeks} Woche(n) ` +
                     `oder ${totalDays} Tag(e) oder ${totalHours} Stunde(n) ` +
                     `oder ${totalMinutes} Minute(n) oder ${totalSeconds} Sekunde(n)`;
 
