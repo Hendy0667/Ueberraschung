@@ -23,6 +23,7 @@
         #timer {
             font-size: clamp(1rem, 3vw, 1.5rem);
             margin-top: clamp(15px, 4vw, 30px);
+            transition: all 0.5s ease;
         }
 
         #extraText {
@@ -30,6 +31,8 @@
             font-size: clamp(1rem, 3vw, 1.2rem);
             color: #555;
             padding: 0 clamp(5px, 2vw, 20px);
+            opacity: 0;
+            transition: opacity 1s ease;
         }
 
         #loveLetter {
@@ -38,6 +41,11 @@
             color: #444;
             white-space: pre-line;
             padding: 0 clamp(10px, 3vw, 30px);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0;
+            transition: opacity 1.5s ease;
         }
 
         #password-section {
@@ -99,15 +107,15 @@
         <h1>💖Seit wir zusammen sind💖</h1>
         <p>Seit dem 25. Mai 2025 um 13:42 Uhr</p>
         <div id="timer">Lädt...</div>
-        <div id="extraText" style="display: none;"></div>
-        <div id="loveLetter" style="display: none;"></div>
+        <div id="extraText"></div>
+        <div id="loveLetter"></div>
 
         <div id="music-buttons">
             <button onclick="changeSong('experience.mp3')">🎻 Experience</button>
             <button onclick="changeSong('a_million_dreams.mp3')">🌟 A Million Dreams</button>
         </div>
 
-        <audio id="loveMusic" autoplay hidden>
+        <audio id="loveMusic" autoplay controls>
             <source src="experience.mp3" type="audio/mpeg">
             Dein Browser unterstützt kein Audio.
         </audio>
@@ -121,11 +129,7 @@
         function updateTimer() {
             const now = new Date();
             let diffMs = now - startDate;
-
-            // Gesamtdauer in Sekunden
             let totalSeconds = Math.floor(diffMs / 1000);
-
-            // Berechne alle Einheiten
             let seconds = totalSeconds % 60;
             let totalMinutes = Math.floor(totalSeconds / 60);
             let minutes = totalMinutes % 60;
@@ -133,57 +137,48 @@
             let hours = totalHours % 24;
             let totalDays = Math.floor(totalHours / 24);
 
-            // Monate und Tage berechnen:
-            // Monate = volle Monate zwischen Startdatum und jetzt, maximal 12
             let months = now.getMonth() - startDate.getMonth() + 
                          (now.getFullYear() - startDate.getFullYear()) * 12;
-            if (months > 12) months = 12;
+            if (now.getDate() < startDate.getDate()) months--;
 
-            // Tage, die nach vollen Monaten übrig bleiben
-            // Wir ziehen Monate in Tagen ab (Ø 30.44 Tage pro Monat)
-            let daysAfterMonths = totalDays - Math.floor(months * 30.44);
-            if (daysAfterMonths < 0) daysAfterMonths = 0;
-
-            // Wochen (maximal 3) und Tage (maximal 6)
+            let monthStartDate = new Date(startDate);
+            monthStartDate.setMonth(startDate.getMonth() + months);
+            let daysAfterMonths = Math.floor((now - monthStartDate) / (1000 * 60 * 60 * 24));
             let weeks = Math.floor(daysAfterMonths / 7);
-            if (weeks > 3) {
-                weeks = 3;
-                daysAfterMonths = 6;
-            } else {
-                daysAfterMonths = daysAfterMonths % 7;
-            }
-            let days = daysAfterMonths;
+            let days = daysAfterMonths % 7;
 
             document.getElementById("timer").textContent =
                 `${months} Monat(e), ${weeks} Woche(n), ${days} Tag(e), ` +
                 `${hours} Stunde(n), ${minutes} Minute(n), ${seconds} Sekunde(n)`;
 
-            // Extra Text nur im Zeitraum anzeigen
             if (now >= showFrom && now < showUntil) {
-                document.getElementById("extraText").style.display = "block";
-                document.getElementById("extraText").innerHTML =
+                let extraText = document.getElementById("extraText");
+                let loveLetter = document.getElementById("loveLetter");
+
+                extraText.style.opacity = 1;
+                extraText.innerHTML =
                     `Das sind: ${months} Monat(e) oder ${weeks} Woche(n) ` +
                     `oder ${totalDays} Tag(e) oder ${totalHours} Stunde(n) ` +
                     `oder ${totalMinutes} Minute(n) oder ${totalSeconds} Sekunde(n)`;
 
-                document.getElementById("loveLetter").style.display = "block";
-                document.getElementById("loveLetter").innerText =
-`Zwei Monate, Mia...
+                loveLetter.style.opacity = 1;
+                loveLetter.innerText =
+`Vier Monate voller Liebe, Mia… 💖
 
-Ich weiß nicht wie – aber jedes Mal, wenn du mir schreibst, schlägt mein Herz schneller.
-Du bringst Ruhe in meine Tage, Wärme in meine Gedanken, und Liebe in mein Herz.
+Jeden Tag mit dir fühlt sich besonders an, als hätten wir unsere eigene kleine Welt geschaffen. 
+Dein Lachen, deine Nachrichten, sogar die kleinen Momente der Stille – sie bedeuten mir alles. 
 
-Diese zwei Monate mit dir waren mehr als nur Zeit... sie waren Gefühl, Hoffnung, Nähe – selbst auf Entfernung.
-Ich liebe dich für all das, was du bist. Für alles, was du mir zeigst. Und für das, was wir gemeinsam sein können.
+Vier Monate, in denen ich dich noch mehr schätze, noch mehr liebe, noch mehr bewundere. 
+Du machst meine Welt heller, wärmer, lebendiger. Und ich kann mir keine schönere Zukunft vorstellen, 
+als diese mit dir zu teilen. 
 
-Ich bin so dankbar, dass du mich gewählt hast.
+Danke, dass du bei mir bist – dass wir gemeinsam wachsen, träumen und einfach wir selbst sein dürfen. 
 
-Ich bleibe – solange du mich willst.
-
-Dein Hendrik. 💖`;
+Für immer dein,
+Hendrik 💕`;
             } else {
-                document.getElementById("extraText").style.display = "none";
-                document.getElementById("loveLetter").style.display = "none";
+                document.getElementById("extraText").style.opacity = 0;
+                document.getElementById("loveLetter").style.opacity = 0;
             }
         }
 
@@ -194,7 +189,9 @@ Dein Hendrik. 💖`;
                 document.getElementById("content").style.display = "block";
                 updateTimer();
                 setInterval(updateTimer, 1000);
-                document.getElementById("loveMusic").play();
+                const player = document.getElementById("loveMusic");
+                player.play();
+                player.loop = true;
             } else {
                 alert("Falsches Passwort 😢");
             }
@@ -204,6 +201,214 @@ Dein Hendrik. 💖`;
             const player = document.getElementById("loveMusic");
             player.src = songFile;
             player.play();
+            player.loop = true;
+        }
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Unsere Zeit zusammen</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #ffe0ec, #f0f8ff);
+            color: #333;
+            text-align: center;
+            padding: clamp(20px, 5vw, 50px);
+            margin: 0;
+        }
+
+        h1 {
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            margin-bottom: clamp(8px, 2vw, 10px);
+        }
+
+        #timer {
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            margin-top: clamp(15px, 4vw, 30px);
+            transition: all 0.5s ease;
+        }
+
+        #extraText {
+            margin-top: clamp(20px, 5vw, 40px);
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            color: #555;
+            padding: 0 clamp(5px, 2vw, 20px);
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        #loveLetter {
+            margin-top: clamp(20px, 5vw, 30px);
+            font-size: clamp(1rem, 3vw, 1.1rem);
+            color: #444;
+            white-space: pre-line;
+            padding: 0 clamp(10px, 3vw, 30px);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0;
+            transition: opacity 1.5s ease;
+        }
+
+        #password-section {
+            margin-top: clamp(50px, 10vw, 100px);
+        }
+
+        input[type="password"] {
+            padding: clamp(8px, 2vw, 12px);
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            width: clamp(150px, 40vw, 300px);
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: clamp(8px, 2vw, 12px) clamp(15px, 4vw, 20px);
+            font-size: clamp(1rem, 3vw, 1.1rem);
+            margin-top: clamp(8px, 2vw, 10px);
+            border: none;
+            border-radius: 8px;
+            background-color: #ffb6c1;
+            cursor: pointer;
+            min-width: 120px;
+        }
+
+        #content {
+            display: none;
+        }
+
+        #music-buttons {
+            margin-top: clamp(15px, 4vw, 20px);
+        }
+
+        #music-buttons button {
+            margin: clamp(4px, 1vw, 5px);
+            min-width: 100px;
+        }
+
+        audio {
+            width: 100%;
+            max-width: 500px;
+            margin-top: clamp(10px, 3vw, 20px);
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="password-section">
+        <h1>🔒 Nur für Mia 💖</h1>
+        <p>Bitte Passwort eingeben:</p>
+        <input type="password" id="passwordInput" placeholder="Passwort eingeben">
+        <br>
+        <button onclick="checkPassword()">Freischalten</button>
+    </div>
+
+    <div id="content">
+        <h1>💖Seit wir zusammen sind💖</h1>
+        <p>Seit dem 25. Mai 2025 um 13:42 Uhr</p>
+        <div id="timer">Lädt...</div>
+        <div id="extraText"></div>
+        <div id="loveLetter"></div>
+
+        <div id="music-buttons">
+            <button onclick="changeSong('experience.mp3')">🎻 Experience</button>
+            <button onclick="changeSong('a_million_dreams.mp3')">🌟 A Million Dreams</button>
+        </div>
+
+        <audio id="loveMusic" autoplay controls>
+            <source src="experience.mp3" type="audio/mpeg">
+            Dein Browser unterstützt kein Audio.
+        </audio>
+    </div>
+
+    <script>
+        const startDate = new Date("2025-05-25T13:42:00");
+        const showFrom = new Date("2025-07-24T00:00:00");
+        const showUntil = new Date("2025-08-25T00:00:00");
+
+        function updateTimer() {
+            const now = new Date();
+            let diffMs = now - startDate;
+            let totalSeconds = Math.floor(diffMs / 1000);
+            let seconds = totalSeconds % 60;
+            let totalMinutes = Math.floor(totalSeconds / 60);
+            let minutes = totalMinutes % 60;
+            let totalHours = Math.floor(totalMinutes / 60);
+            let hours = totalHours % 24;
+            let totalDays = Math.floor(totalHours / 24);
+
+            let months = now.getMonth() - startDate.getMonth() + 
+                         (now.getFullYear() - startDate.getFullYear()) * 12;
+            if (now.getDate() < startDate.getDate()) months--;
+
+            let monthStartDate = new Date(startDate);
+            monthStartDate.setMonth(startDate.getMonth() + months);
+            let daysAfterMonths = Math.floor((now - monthStartDate) / (1000 * 60 * 60 * 24));
+            let weeks = Math.floor(daysAfterMonths / 7);
+            let days = daysAfterMonths % 7;
+
+            document.getElementById("timer").textContent =
+                `${months} Monat(e), ${weeks} Woche(n), ${days} Tag(e), ` +
+                `${hours} Stunde(n), ${minutes} Minute(n), ${seconds} Sekunde(n)`;
+
+            if (now >= showFrom && now < showUntil) {
+                let extraText = document.getElementById("extraText");
+                let loveLetter = document.getElementById("loveLetter");
+
+                extraText.style.opacity = 1;
+                extraText.innerHTML =
+                    `Das sind: ${months} Monat(e) oder ${weeks} Woche(n) ` +
+                    `oder ${totalDays} Tag(e) oder ${totalHours} Stunde(n) ` +
+                    `oder ${totalMinutes} Minute(n) oder ${totalSeconds} Sekunde(n)`;
+
+                loveLetter.style.opacity = 1;
+                loveLetter.innerText =
+`Vier Monate voller Liebe, Mia… 💖
+
+Jeden Tag mit dir fühlt sich besonders an, als hätten wir unsere eigene kleine Welt geschaffen. 
+Dein Lachen, deine Nachrichten, sogar die kleinen Momente der Stille – sie bedeuten mir alles. 
+
+Vier Monate, in denen ich dich noch mehr schätze, noch mehr liebe, noch mehr bewundere. 
+Du machst meine Welt heller, wärmer, lebendiger. Und ich kann mir keine schönere Zukunft vorstellen, 
+als diese mit dir zu teilen. 
+
+Danke, dass du bei mir bist – dass wir gemeinsam wachsen, träumen und einfach wir selbst sein dürfen. 
+
+Für immer dein,
+Hendrik 💕`;
+            } else {
+                document.getElementById("extraText").style.opacity = 0;
+                document.getElementById("loveLetter").style.opacity = 0;
+            }
+        }
+
+        function checkPassword() {
+            const input = document.getElementById("passwordInput").value;
+            if (input === "mia2025") {
+                document.getElementById("password-section").style.display = "none";
+                document.getElementById("content").style.display = "block";
+                updateTimer();
+                setInterval(updateTimer, 1000);
+                const player = document.getElementById("loveMusic");
+                player.play();
+                player.loop = true;
+            } else {
+                alert("Falsches Passwort 😢");
+            }
+        }
+
+        function changeSong(songFile) {
+            const player = document.getElementById("loveMusic");
+            player.src = songFile;
+            player.play();
+            player.loop = true;
         }
     </script>
 </body>
