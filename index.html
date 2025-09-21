@@ -117,7 +117,7 @@
             <button onclick="changeSong('a_million_dreams.mp3')">🌟 A Million Dreams</button>
         </div>
 
-        <audio id="loveMusic" autoplay controls>
+        <audio id="loveMusic" autoplay loop hidden>
             <source src="experience.mp3" type="audio/mpeg">
             Dein Browser unterstützt kein Audio.
         </audio>
@@ -199,9 +199,7 @@ Hendrik 💕`;
                 document.getElementById("content").style.display = "block";
                 updateTimer();
                 setInterval(updateTimer, 1000);
-                const player = document.getElementById("loveMusic");
-                player.play();
-                player.loop = true;
+                document.getElementById("loveMusic").play();
             } else {
                 alert("Falsches Passwort 😢");
             }
